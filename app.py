@@ -10,8 +10,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # ============================================
 # CONFIGURACIÓN DE TELEGRAM
 # ============================================
-TELEGRAM_TOKEN = "PON_AQUI_TU_TOKEN"  # ← Pega tu token de BotFather
-TELEGRAM_CHAT_ID = "PON_AQUI_TU_CHAT_ID"  # ← Pega tu chat ID
+TELEGRAM_TOKEN = "8871598841:AAHszVIUkwGoxYklkoHeTdNSZ68MuPlzqKw"  # ← Pega tu token de BotFather
+TELEGRAM_CHAT_ID = "8514421716"  # ← Pega tu chat ID
 
 def enviar_telegram(mensaje):
     """Envía una notificación a Telegram"""
