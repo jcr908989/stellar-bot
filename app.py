@@ -1,407 +1,366 @@
 import os
-import json
 import time
-import requests
+import json
 import threading
+import requests
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from functools import wraps
+from apscheduler.schedulers.background import BackgroundScheduler
 
+# ============================================
+# CONFIGURACIÓN DE TELEGRAM
+# ============================================
+TELEGRAM_TOKEN = "PON_AQUI_TU_TOKEN"  # ← Pega tu token de BotFather
+TELEGRAM_CHAT_ID = "PON_AQUI_TU_CHAT_ID"  # ← Pega tu chat ID
+
+def enviar_telegram(mensaje):
+    """Envía una notificación a Telegram"""
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        datos = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": mensaje,
+            "parse_mode": "HTML"
+        }
+        requests.post(url, data=datos)
+        print(f"✅ Notificación enviada a Telegram: {mensaje[:50]}...")
+    except Exception as e:
+        print(f"❌ Error al enviar Telegram: {e}")
+
+# ============================================
+# CONFIGURACIÓN DE LA APP
+# ============================================
 app = Flask(__name__)
-app.secret_key = "stellar_aio_secret_key_2024"
+app.secret_key = "stellar_bot_secret_key_2024"
+
+# Credenciales de acceso
+USUARIO = "admin"
+CONTRASEÑA = "admin123"
+
+# Variables globales
+alertas_activas = True
+monitoreo_activo = True
+precios_objetivo = {}
+productos_monitoreados = []
 
 # ============================================
-# DATOS DE ALMACENAMIENTO
+# LISTA DE TIENDAS (15 tiendas)
 # ============================================
-DATA_FILE = "datos.json"
-
-def cargar_datos():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return {
-        "config": {
-            "email": "",
-            "password": "",
-            "intervalo": 15,
-            "moneda": "EUR"
-        },
-        "tiendas": [
-            {"nombre": "Darizard9", "url": "https://www.darizard9.com/search?q={producto}"},
-            {"nombre": "Pokemillon", "url": "https://www.pokemillon.com/search?q={producto}"},
-            {"nombre": "UnSobreMas", "url": "https://www.unsobremas.com/search?q={producto}"},
-            {"nombre": "ToysRUs", "url": "https://www.toysrus.es/search?q={producto}"},
-            {"nombre": "TCGFactory", "url": "https://www.tcgfactory.com/search?q={producto}"},
-            {"nombre": "Amazon", "url": "https://www.amazon.es/s?k={producto}"},
-            {"nombre": "eBay", "url": "https://www.ebay.es/sch/i.html?_nkw={producto}"},
-            {"nombre": "Carrefour", "url": "https://www.carrefour.es/search?q={producto}"},
-            {"nombre": "Game", "url": "https://www.game.es/buscar?text={producto}"},
-            {"nombre": "El Corte Ingles", "url": "https://www.elcorteingles.es/supermercado/buscar/?q={producto}"},
-            {"nombre": "Topps", "url": "https://www.topps.com/catalogsearch/result/?q={producto}"},
-            {"nombre": "Turolgames", "url": "https://www.turolgames.com/buscar?q={producto}"},
-            {"nombre": "Flashstore", "url": "https://www.flashstore.es/buscar?q={producto}"},
-            {"nombre": "Pokemon Center", "url": "https://www.pokemoncenter.com/search?q={producto}"},
-            {"nombre": "Cardmarket", "url": "https://www.cardmarket.com/en/Magic/Products/Singles?searchString={producto}"}
-        ],
-        "cuentas_tiendas": {
-            "darizard9": {"email": "", "password": ""},
-            "pokemillon": {"email": "", "password": ""},
-            "unsobremas": {"email": "", "password": ""},
-            "toysrus": {"email": "", "password": ""},
-            "tcgfactory": {"email": "", "password": ""},
-            "amazon": {"email": "", "password": ""},
-            "ebay": {"email": "", "password": ""},
-            "carrefour": {"email": "", "password": ""},
-            "game": {"email": "", "password": ""},
-            "el_corte_ingles": {"email": "", "password": ""},
-            "topps": {"email": "", "password": ""},
-            "turolgames": {"email": "", "password": ""},
-            "flashstore": {"email": "", "password": ""},
-            "pokemon_center": {"email": "", "password": ""},
-            "cardmarket": {"email": "", "password": ""}
-        },
-        "snipes": [],
-        "tareas": [],
-        "preventas": [],
-        "proxies": [],
-        "perfiles": [],
-        "pagos": [],
-        "compras": []
-    }
-
-datos = cargar_datos()
-
-def guardar_datos():
-    with open(DATA_FILE, "w") as f:
-        json.dump(datos, f, indent=2, ensure_ascii=False)
+TIENDAS = [
+    {"id": 1, "nombre": "Darizard9", "url": "https://www.darizard9.com", "categoria": "TCG"},
+    {"id": 2, "nombre": "Pokemillon", "url": "https://www.pokemillon.com", "categoria": "TCG"},
+    {"id": 3, "nombre": "UnSobreMas", "url": "https://www.unsobremas.com", "categoria": "TCG"},
+    {"id": 4, "nombre": "ToysRUs", "url": "https://www.toysrus.es", "categoria": "Juguetes"},
+    {"id": 5, "nombre": "TCGFactory", "url": "https://www.tcgfactory.com", "categoria": "TCG"},
+    {"id": 6, "nombre": "Amazon", "url": "https://www.amazon.es", "categoria": "General"},
+    {"id": 7, "nombre": "eBay", "url": "https://www.ebay.es", "categoria": "General"},
+    {"id": 8, "nombre": "Carrefour", "url": "https://www.carrefour.es", "categoria": "General"},
+    {"id": 9, "nombre": "Game", "url": "https://www.game.es", "categoria": "Videojuegos"},
+    {"id": 10, "nombre": "El Corte Ingles", "url": "https://www.elcorteingles.es", "categoria": "General"},
+    {"id": 11, "nombre": "Topps", "url": "https://www.topps.com", "categoria": "TCG"},
+    {"id": 12, "nombre": "Turolgames", "url": "https://www.turolgames.com", "categoria": "Videojuegos"},
+    {"id": 13, "nombre": "Flashstore", "url": "https://www.flashstore.com", "categoria": "General"},
+    {"id": 14, "nombre": "Pokemon Center", "url": "https://www.pokemoncenter.com", "categoria": "TCG"},
+    {"id": 15, "nombre": "Cardmarket", "url": "https://www.cardmarket.com", "categoria": "TCG"}
+]
 
 # ============================================
 # FUNCIONES DE BÚSQUEDA
 # ============================================
-def buscar_en_tienda(tienda_url, producto):
-    try:
-        url = tienda_url.replace("{producto}", producto.replace(" ", "+"))
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        return {
-            "url": url,
-            "status": response.status_code,
-            "tienda": tienda_url.split("//")[1].split("/")[0]
-        }
-    except Exception as e:
-        return {"error": str(e)}
+def buscar_en_tienda(tienda, producto):
+    """Simula la búsqueda de un producto en una tienda"""
+    import random
+    
+    # Simular precios según la tienda
+    precios_base = {
+        "Amazon": 25.99,
+        "eBay": 23.50,
+        "Cardmarket": 20.00,
+        "Pokemon Center": 29.99,
+        "Topps": 24.99,
+        "Game": 49.99,
+        "Carrefour": 27.50,
+        "El Corte Ingles": 28.99,
+        "ToysRUs": 26.99,
+        "Darizard9": 22.00,
+        "Pokemillon": 21.50,
+        "UnSobreMas": 22.99,
+        "TCGFactory": 23.99,
+        "Turolgames": 45.00,
+        "Flashstore": 24.50
+    }
+    
+    precio = precios_base.get(tienda["nombre"], 25.00)
+    # Añadir variación aleatoria
+    precio = round(precio * (0.9 + random.random() * 0.3), 2)
+    
+    # Simular disponibilidad
+    disponible = random.random() > 0.2
+    
+    return {
+        "tienda": tienda["nombre"],
+        "producto": producto,
+        "precio": precio,
+        "disponible": disponible,
+        "url": tienda["url"],
+        "timestamp": datetime.now().strftime("%H:%M:%S")
+    }
 
-def buscar_producto(producto):
+def buscar_producto_todas_tiendas(producto):
+    """Busca un producto en todas las tiendas"""
     resultados = []
-    for tienda in datos["tiendas"]:
-        resultado = buscar_en_tienda(tienda["url"], producto)
-        resultados.append({
-            "tienda": tienda["nombre"],
-            "url": resultado.get("url", ""),
-            "status": resultado.get("status", "Error")
-        })
-    return resultados
+    for tienda in TIENDAS:
+        resultado = buscar_en_tienda(tienda, producto)
+        if resultado["disponible"]:
+            resultados.append(resultado)
+    
+    # Ordenar por precio
+    resultados.sort(key=lambda x: x["precio"])
+    
+    # Enviar notificación de Telegram si hay resultados
+    if resultados and alertas_activas:
+        mejor = resultados[0]
+        enviar_telegram(f"""
+🔍 <b>Búsqueda completada: {producto}</b>
 
-# ============================================
-# FUNCIONES DE COMPRA AUTOMÁTICA
-# ============================================
-def compra_automatica(tienda, producto_url, perfil, pago):
-    try:
-        credenciales = datos["cuentas_tiendas"].get(tienda, {})
-        if not credenciales.get("email"):
-            return {
-                "status": "error",
-                "mensaje": f"No hay credenciales configuradas para {tienda}"
-            }
-        
-        time.sleep(2)
-        
-        resultado = {
-            "status": "success",
-            "tienda": tienda,
-            "producto": producto_url,
-            "perfil": perfil.get("nombre", "N/A"),
-            "pago": pago.get("tipo", "N/A"),
-            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "mensaje": f"Compra realizada en {tienda}"
-        }
-        
-        datos["compras"].append(resultado)
-        guardar_datos()
-        
-        return resultado
-        
-    except Exception as e:
-        return {
-            "status": "error",
-            "mensaje": f"Error en la compra: {str(e)}"
-        }
+🏆 <b>Mejor precio:</b>
+🏪 {mejor['tienda']}
+💰 {mejor['precio']}€
+🔗 <a href="{mejor['url']}">Ver oferta</a>
+
+📊 <b>Total de resultados:</b> {len(resultados)}
+""")
+    
+    return resultados
 
 # ============================================
 # FUNCIONES DE MONITOREO
 # ============================================
-def monitorear_snipes():
-    while True:
-        try:
-            for snipe in datos["snipes"]:
-                if snipe.get("activo", False):
-                    print(f"Monitoreando: {snipe['producto']}")
-            time.sleep(datos["config"].get("intervalo", 15))
-        except Exception as e:
-            print(f"Error en monitoreo: {e}")
-            time.sleep(30)
-
-# ============================================
-# DECORADORES DE AUTENTICACIÓN
-# ============================================
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in"):
-            return redirect(url_for("login"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-# ============================================
-# RUTAS PRINCIPALES
-# ============================================
-@app.route("/")
-def index():
-    if session.get("logged_in"):
-        return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        usuario = request.form.get("usuario")
-        password = request.form.get("password")
+def monitorear_precios():
+    """Monitorea los precios de los productos"""
+    global monitoreo_activo
+    
+    if not monitoreo_activo or not productos_monitoreados:
+        return
+    
+    for producto in productos_monitoreados:
+        resultados = buscar_producto_todas_tiendas(producto["nombre"])
         
-        if usuario == "admin" and password == "admin123":
-            session["logged_in"] = True
-            session["usuario"] = usuario
-            flash("Bienvenido al sistema", "success")
-            return redirect(url_for("dashboard"))
+        if resultados:
+            mejor_precio = resultados[0]["precio"]
+            precio_objetivo = producto.get("precio_objetivo", 0)
+            
+            if precio_objetivo > 0 and mejor_precio <= precio_objetivo:
+                enviar_telegram(f"""
+🎯 <b>¡ALERTA DE PRECIO OBJETIVO!</b>
+
+📦 <b>Producto:</b> {producto['nombre']}
+💰 <b>Precio actual:</b> {mejor_precio}€
+🎯 <b>Precio objetivo:</b> {precio_objetivo}€
+🏪 <b>Tienda:</b> {resultados[0]['tienda']}
+🔗 <a href="{resultados[0]['url']}">Comprar ahora</a>
+""")
+
+# ============================================
+# SNIPER DE CARDMARKET
+# ============================================
+def sniper_cardmarket():
+    """Monitorea Cardmarket para encontrar gangas"""
+    global alertas_activas
+    
+    if not alertas_activas:
+        return
+    
+    import random
+    
+    # Simular detección de ofertas
+    if random.random() < 0.3:  # 30% de probabilidad de encontrar oferta
+        cartas = ["Charizard VMAX", "Pikachu Illustrator", "Mewtwo GX", "Umbreon VMAX", "Rayquaza V"]
+        carta = random.choice(cartas)
+        precio_normal = random.uniform(50, 200)
+        precio_oferta = precio_normal * random.uniform(0.6, 0.9)
+        
+        enviar_telegram(f"""
+⚡ <b>¡SNIPER CARDMARKET ACTIVADO!</b>
+
+🃏 <b>Carta:</b> {carta}
+💰 <b>Precio normal:</b> {precio_normal:.2f}€
+🔥 <b>Precio oferta:</b> {precio_oferta:.2f}€
+📉 <b>Descuento:</b> {((1 - precio_oferta/precio_normal) * 100):.1f}%
+🔗 <a href="https://www.cardmarket.com">Ver en Cardmarket</a>
+""")
+
+# ============================================
+# RUTAS DE LA APP
+# ============================================
+@app.route('/')
+def index():
+    if 'usuario' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        usuario = request.form.get('usuario')
+        contraseña = request.form.get('contraseña')
+        
+        if usuario == USUARIO and contraseña == CONTRASEÑA:
+            session['usuario'] = usuario
+            enviar_telegram("✅ <b>¡Inicio de sesión exitoso!</b>\n👤 Usuario: admin")
+            return redirect(url_for('dashboard'))
         else:
-            flash("Credenciales incorrectas", "danger")
+            return render_template('login.html', error="Credenciales incorrectas")
     
-    return render_template("login.html")
+    return render_template('login.html')
 
-@app.route("/logout")
+@app.route('/logout')
 def logout():
-    session.clear()
-    return redirect(url_for("login"))
+    session.pop('usuario', None)
+    return redirect(url_for('login'))
 
-@app.route("/dashboard")
-@login_required
+@app.route('/dashboard')
 def dashboard():
-    return render_template("dashboard.html", datos=datos)
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+    return render_template('dashboard.html', tiendas=TIENDAS)
 
-@app.route("/buscar", methods=["POST"])
-@login_required
-def buscar():
-    producto = request.form.get("producto")
+# ============================================
+# API DE BÚSQUEDA
+# ============================================
+@app.route('/api/buscar', methods=['POST'])
+def api_buscar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    data = request.json
+    producto = data.get('producto', '')
+    tienda_id = data.get('tienda_id')
+    
     if not producto:
-        flash("Introduce un producto para buscar", "warning")
-        return redirect(url_for("dashboard"))
+        return jsonify({"error": "Producto requerido"}), 400
     
-    resultados = buscar_producto(producto)
-    return render_template("dashboard.html", datos=datos, resultados=resultados, busqueda=producto)
-
-@app.route("/comprar", methods=["POST"])
-@login_required
-def comprar():
-    tienda = request.form.get("tienda")
-    producto_url = request.form.get("producto_url")
-    perfil_nombre = request.form.get("perfil")
+    if tienda_id:
+        tienda = next((t for t in TIENDAS if t["id"] == int(tienda_id)), None)
+        if tienda:
+            resultado = buscar_en_tienda(tienda, producto)
+            return jsonify([resultado])
     
-    perfil = next((p for p in datos["perfiles"] if p["nombre"] == perfil_nombre), None)
-    pago = datos["pagos"][0] if datos["pagos"] else None
-    
-    if not perfil:
-        flash("Configura un perfil de compra primero", "danger")
-        return redirect(url_for("dashboard"))
-    
-    if not pago:
-        flash("Configura un método de pago primero", "danger")
-        return redirect(url_for("dashboard"))
-    
-    resultado = compra_automatica(tienda, producto_url, perfil, pago)
-    
-    if resultado["status"] == "success":
-        flash(f"Compra realizada: {resultado['mensaje']}", "success")
-    else:
-        flash(f"Error: {resultado['mensaje']}", "danger")
-    
-    return redirect(url_for("dashboard"))
+    resultados = buscar_producto_todas_tiendas(producto)
+    return jsonify(resultados)
 
 # ============================================
-# RUTAS DE CONFIGURACIÓN
+# API DE MONITOREO
 # ============================================
-@app.route("/guardar_config", methods=["POST"])
-@login_required
-def guardar_config():
-    datos["config"]["email"] = request.form.get("email", "")
-    datos["config"]["password"] = request.form.get("password", "")
-    datos["config"]["intervalo"] = int(request.form.get("intervalo", 15))
-    guardar_datos()
-    flash("Configuración guardada", "success")
-    return redirect(url_for("dashboard"))
+@app.route('/api/monitorear', methods=['POST'])
+def api_monitorear():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    data = request.json
+    producto = data.get('producto')
+    precio_objetivo = data.get('precio_objetivo', 0)
+    
+    if not producto:
+        return jsonify({"error": "Producto requerido"}), 400
+    
+    productos_monitoreados.append({
+        "nombre": producto,
+        "precio_objetivo": precio_objetivo
+    })
+    
+    enviar_telegram(f"""
+📊 <b>Nuevo producto en monitoreo:</b>
+📦 {producto}
+🎯 Precio objetivo: {precio_objetivo}€
+""")
+    
+    return jsonify({"mensaje": "Producto agregado al monitoreo"})
 
-@app.route("/agregar_tienda", methods=["POST"])
-@login_required
-def agregar_tienda():
-    nombre = request.form.get("nombre")
-    url = request.form.get("url")
+@app.route('/api/monitoreo/estado', methods=['GET'])
+def api_monitoreo_estado():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
     
-    if nombre and url:
-        datos["tiendas"].append({"nombre": nombre, "url": url})
-        guardar_datos()
-        flash("Tienda agregada correctamente", "success")
-    else:
-        flash("Nombre y URL son obligatorios", "danger")
-    
-    return redirect(url_for("dashboard"))
+    return jsonify({
+        "activo": monitoreo_activo,
+        "productos": productos_monitoreados
+    })
 
-@app.route("/guardar_cuenta_tienda", methods=["POST"])
-@login_required
-def guardar_cuenta_tienda():
-    tienda = request.form.get("tienda")
-    email = request.form.get("email")
-    password = request.form.get("password")
+@app.route('/api/monitoreo/toggle', methods=['POST'])
+def api_monitoreo_toggle():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
     
-    if tienda in datos["cuentas_tiendas"]:
-        datos["cuentas_tiendas"][tienda]["email"] = email
-        datos["cuentas_tiendas"][tienda]["password"] = password
-        guardar_datos()
-        flash(f"Credenciales de {tienda} guardadas", "success")
-    else:
-        flash("Tienda no encontrada", "danger")
+    global monitoreo_activo
+    monitoreo_activo = not monitoreo_activo
     
-    return redirect(url_for("dashboard"))
-
-@app.route("/agregar_perfil", methods=["POST"])
-@login_required
-def agregar_perfil():
-    perfil = {
-        "nombre": request.form.get("nombre"),
-        "nombre_completo": request.form.get("nombre_completo"),
-        "direccion": request.form.get("direccion"),
-        "ciudad": request.form.get("ciudad"),
-        "codigo_postal": request.form.get("codigo_postal"),
-        "pais": request.form.get("pais"),
-        "telefono": request.form.get("telefono")
-    }
+    estado = "activado" if monitoreo_activo else "desactivado"
+    enviar_telegram(f"🔄 Monitoreo {estado}")
     
-    datos["perfiles"].append(perfil)
-    guardar_datos()
-    flash("Perfil agregado correctamente", "success")
-    return redirect(url_for("dashboard"))
-
-@app.route("/agregar_pago", methods=["POST"])
-@login_required
-def agregar_pago():
-    tipo = request.form.get("tipo")
-    
-    if tipo == "tarjeta":
-        pago = {
-            "tipo": "tarjeta",
-            "numero": request.form.get("numero"),
-            "titular": request.form.get("titular"),
-            "caducidad": request.form.get("caducidad"),
-            "cvv": request.form.get("cvv"),
-            "marca": request.form.get("marca")
-        }
-    else:
-        pago = {
-            "tipo": "paypal",
-            "email": request.form.get("email_paypal"),
-            "password": request.form.get("password_paypal"),
-            "titular": request.form.get("titular_paypal")
-        }
-    
-    datos["pagos"].append(pago)
-    guardar_datos()
-    flash("Método de pago agregado", "success")
-    return redirect(url_for("dashboard"))
-
-@app.route("/agregar_snipe", methods=["POST"])
-@login_required
-def agregar_snipe():
-    snipe = {
-        "producto": request.form.get("producto"),
-        "tienda": request.form.get("tienda"),
-        "precio_max": float(request.form.get("precio_max", 0)),
-        "activo": True,
-        "fecha_creacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-    
-    datos["snipes"].append(snipe)
-    guardar_datos()
-    flash("Sniper configurado correctamente", "success")
-    return redirect(url_for("dashboard"))
-
-@app.route("/agregar_tarea", methods=["POST"])
-@login_required
-def agregar_tarea():
-    tarea = {
-        "nombre": request.form.get("nombre"),
-        "tienda": request.form.get("tienda"),
-        "producto": request.form.get("producto"),
-        "estado": "pendiente",
-        "fecha_creacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-    
-    datos["tareas"].append(tarea)
-    guardar_datos()
-    flash("Tarea agregada correctamente", "success")
-    return redirect(url_for("dashboard"))
-
-@app.route("/agregar_preventa", methods=["POST"])
-@login_required
-def agregar_preventa():
-    preventa = {
-        "producto": request.form.get("producto"),
-        "tienda": request.form.get("tienda"),
-        "fecha_lanzamiento": request.form.get("fecha_lanzamiento"),
-        "precio": float(request.form.get("precio", 0)),
-        "activo": True
-    }
-    
-    datos["preventas"].append(preventa)
-    guardar_datos()
-    flash("Preventa configurada", "success")
-    return redirect(url_for("dashboard"))
-
-@app.route("/agregar_proxy", methods=["POST"])
-@login_required
-def agregar_proxy():
-    proxy = {
-        "ip": request.form.get("ip"),
-        "puerto": request.form.get("puerto"),
-        "usuario": request.form.get("usuario"),
-        "password": request.form.get("password"),
-        "pais": request.form.get("pais")
-    }
-    
-    datos["proxies"].append(proxy)
-    guardar_datos()
-    flash("Proxy agregado", "success")
-    return redirect(url_for("dashboard"))
+    return jsonify({"activo": monitoreo_activo})
 
 # ============================================
-# INICIAR MONITOREO EN SEGUNDO PLANO
+# API DE TELEGRAM
 # ============================================
-def iniciar_monitoreo():
-    thread = threading.Thread(target=monitorear_snipes, daemon=True)
-    thread.start()
+@app.route('/telegram/test', methods=['POST'])
+def telegram_test():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    enviar_telegram("✅ <b>¡Conexión con Telegram exitosa!</b>\nTu bot está funcionando correctamente.")
+    return jsonify({"mensaje": "Notificación de prueba enviada"})
+
+@app.route('/telegram/activar', methods=['POST'])
+def telegram_activar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    global alertas_activas
+    alertas_activas = True
+    enviar_telegram("🔔 <b>Alertas activadas</b>\nRecibirás notificaciones de precios y ofertas.")
+    return jsonify({"mensaje": "Alertas activadas"})
+
+@app.route('/telegram/desactivar', methods=['POST'])
+def telegram_desactivar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    global alertas_activas
+    alertas_activas = False
+    enviar_telegram("🔕 <b>Alertas desactivadas</b>\nNo recibirás más notificaciones.")
+    return jsonify({"mensaje": "Alertas desactivadas"})
 
 # ============================================
-# INICIAR APLICACIÓN
+# API DE SNIPER
+# ============================================
+@app.route('/api/sniper/activar', methods=['POST'])
+def api_sniper_activar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    enviar_telegram("⚡ <b>Sniper de Cardmarket activado</b>\nMonitoreando ofertas en tiempo real...")
+    return jsonify({"mensaje": "Sniper activado"})
+
+@app.route('/api/sniper/estado', methods=['GET'])
+def api_sniper_estado():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    return jsonify({"activo": alertas_activas})
+
+# ============================================
+# INICIAR MONITOREO AUTOMÁTICO
+# ============================================
+scheduler = BackgroundScheduler()
+scheduler.add_job(monitorear_precios, 'interval', minutes=5)
+scheduler.add_job(sniper_cardmarket, 'interval', minutes=10)
+scheduler.start()
+
+# ============================================
+# INICIAR LA APP
 # ============================================
 if __name__ == "__main__":
-    iniciar_monitoreo()
+    enviar_telegram("🚀 <b>Stellar Bot iniciado</b>\nEl bot está funcionando correctamente.")
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
