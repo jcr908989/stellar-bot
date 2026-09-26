@@ -12,19 +12,23 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: #0a0a0a;
+            min-height: 100vh;
+            color: #ffffff;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #1a1a1a;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
         }
         .header h1 {
+            color: #667eea;
             font-size: 1.8em;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
         }
         .header .user-info {
             display: flex;
@@ -32,10 +36,11 @@
             gap: 15px;
         }
         .header .user-info span {
+            color: #ffffff;
             font-weight: 500;
         }
         .header .btn-logout {
-            background: rgba(255,255,255,0.2);
+            background: #667eea;
             color: white;
             padding: 8px 15px;
             border: none;
@@ -43,9 +48,12 @@
             cursor: pointer;
             text-decoration: none;
             font-size: 14px;
+            transition: all 0.3s;
         }
         .header .btn-logout:hover {
-            background: rgba(255,255,255,0.3);
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         .container {
             max-width: 1200px;
@@ -59,35 +67,20 @@
             margin-top: 30px;
         }
         .card {
-            background: white;
+            background: #1a1a1a;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            border: 1px solid #333;
+            transition: all 0.3s;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            border-color: #667eea;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
         }
         .card h3 {
-            color: #333;
+            color: #ffffff;
             margin-bottom: 15px;
             font-size: 1.2em;
-        }
-        .card .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-active {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        .status-inactive {
-            background: #ffebee;
-            color: #c62828;
         }
         .search-box {
             display: flex;
@@ -97,49 +90,90 @@
         .search-box input {
             flex: 1;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            background: #2a2a2a;
+            border: 1px solid #444;
             border-radius: 8px;
             font-size: 16px;
+            color: #ffffff;
+            transition: all 0.3s;
         }
         .search-box input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        .search-box input::placeholder {
+            color: #666;
         }
         .btn {
             padding: 12px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s;
         }
         .btn:hover {
+            background: #5a67d8;
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
+            background: #2a2a2a;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+        .btn-secondary:hover {
+            background: #3a3a3a;
+            border-color: #667eea;
         }
         .btn-danger {
             background: #f44336;
         }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
         .btn-success {
             background: #4caf50;
+        }
+        .btn-success:hover {
+            background: #388e3c;
         }
         .btn-telegram {
             background: #0088cc;
         }
+        .btn-telegram:hover {
+            background: #0077b3;
+        }
+        .btn-login {
+            background: #2196f3;
+        }
+        .btn-login:hover {
+            background: #1976d2;
+        }
+        .btn-proxy {
+            background: #ff9800;
+        }
+        .btn-proxy:hover {
+            background: #f57c00;
+        }
         .result-item {
             padding: 15px;
-            border: 1px solid #e0e0e0;
+            background: #2a2a2a;
+            border: 1px solid #444;
             border-radius: 8px;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s;
+        }
+        .result-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
         }
         .result-item .store {
             font-weight: 600;
@@ -148,10 +182,7 @@
         .result-item .price {
             font-size: 1.2em;
             font-weight: 700;
-            color: #2e7d32;
-        }
-        .result-item .unavailable {
-            color: #c62828;
+            color: #4caf50;
         }
         .result-item a {
             color: #667eea;
@@ -159,6 +190,7 @@
         }
         .result-item a:hover {
             text-decoration: underline;
+            color: #8b9cf7;
         }
         .tiendas-grid {
             display: grid;
@@ -167,7 +199,8 @@
         }
         .tienda-item {
             padding: 15px;
-            border: 2px solid #e0e0e0;
+            background: #1a1a1a;
+            border: 1px solid #333;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
@@ -175,20 +208,40 @@
         }
         .tienda-item:hover {
             border-color: #667eea;
-            background: #f0f0ff;
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
         }
         .tienda-item.selected {
             border-color: #667eea;
-            background: #e8e8ff;
+            background: #2a2a2a;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
         }
         .tienda-item .tienda-nombre {
             font-weight: 600;
-            color: #333;
+            color: #ffffff;
         }
         .tienda-item .tienda-categoria {
             font-size: 12px;
-            color: #666;
+            color: #888;
             margin-top: 5px;
+        }
+        .tienda-item .tienda-login {
+            font-size: 11px;
+            margin-top: 5px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .login-activo {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+        .login-inactivo {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
         }
         .monitoreo-list {
             max-height: 300px;
@@ -199,10 +252,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #333;
         }
         .monitoreo-item .producto-nombre {
             font-weight: 500;
+            color: #ffffff;
         }
         .monitoreo-item .precio-objetivo {
             color: #667eea;
@@ -219,6 +273,7 @@
             z-index: 1000;
             display: none;
             animation: slideIn 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .notificacion.success {
             background: #4caf50;
@@ -232,15 +287,18 @@
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
+                opacity: 0;
             }
             to {
                 transform: translateX(0);
+                opacity: 1;
             }
         }
         .section-title {
-            color: #333;
+            color: #ffffff;
             margin: 30px 0 20px;
             font-size: 1.5em;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
         }
         .stats-grid {
             display: grid;
@@ -249,51 +307,314 @@
             margin-bottom: 30px;
         }
         .stat-card {
-            background: white;
+            background: #1a1a1a;
             padding: 20px;
             border-radius: 12px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
         }
         .stat-card .stat-number {
             font-size: 2.5em;
             font-weight: 700;
             color: #667eea;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
         }
         .stat-card .stat-label {
-            color: #666;
+            color: #888;
             margin-top: 5px;
         }
         .telegram-section {
-            background: linear-gradient(135deg, #0088cc 0%, #00a2e8 100%);
-            color: white;
+            background: #1a1a1a;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .telegram-section:hover {
+            border-color: #0088cc;
+            box-shadow: 0 4px 20px rgba(0, 136, 204, 0.2);
         }
         .telegram-section h3 {
+            color: #ffffff;
             margin-bottom: 15px;
         }
         .telegram-section .btn {
-            background: white;
-            color: #0088cc;
             margin-right: 10px;
             margin-bottom: 10px;
         }
         .sniper-section {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
-            color: white;
+            background: #1a1a1a;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .sniper-section:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
         }
         .sniper-section h3 {
+            color: #ffffff;
             margin-bottom: 15px;
         }
         .sniper-section .btn {
-            background: white;
-            color: #ff6b6b;
             margin-right: 10px;
+        }
+        .pagos-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .pagos-section:hover {
+            border-color: #4caf50;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.2);
+        }
+        .pagos-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        .pagos-section .btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .login-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .login-section:hover {
+            border-color: #2196f3;
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.2);
+        }
+        .login-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        .login-section .btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .proxy-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .proxy-section:hover {
+            border-color: #ff9800;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.2);
+        }
+        .proxy-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        .proxy-section .btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #ffffff;
+            transition: all 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: #666;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #333;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        .modal-content h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .close {
+            color: #888;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .close:hover {
+            color: #ffffff;
+            transform: rotate(90deg);
+        }
+        .url-display {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            word-break: break-all;
+            border: 1px solid #444;
+        }
+        .url-display a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .url-display a:hover {
+            text-decoration: underline;
+            color: #8b9cf7;
+        }
+        .descripcion {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .proxy-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .proxy-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        .proxy-item:hover {
+            border-color: #ff9800;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+        }
+        .proxy-item .proxy-info {
+            flex: 1;
+        }
+        .proxy-item .proxy-ip {
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .proxy-item .proxy-details {
+            font-size: 12px;
+            color: #888;
+            margin-top: 3px;
+        }
+        .proxy-item .proxy-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+        .proxy-status.active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+        .proxy-status.inactive {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #667eea;
+        }
+        .modal-content h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        .modal-content p {
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .modal-content strong {
+            color: #ffffff;
+        }
+        .modal-content .result-item {
+            background: #2a2a2a;
+        }
+        .modal-content .result-item .store {
+            color: #667eea;
+        }
+        .modal-content .result-item small {
+            color: #888;
+        }
+        .modal-content .form-group select option {
+            background: #2a2a2a;
+            color: #ffffff;
+        }
+        .modal-content .tienda-item {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+        .modal-content .tienda-item:hover {
+            border-color: #667eea;
+            background: #3a3a3a;
+        }
+        .modal-content .tienda-item .tienda-nombre {
+            color: #ffffff;
+        }
+        .modal-content .tienda-item .tienda-categoria {
+            color: #888;
         }
     </style>
 </head>
@@ -322,28 +643,57 @@
                 <div class="stat-label">Alertas Telegram</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">Disponibilidad</div>
+                <div class="stat-number" id="transacciones-count">0</div>
+                <div class="stat-label">Pagos Realizados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="proxies-count">0</div>
+                <div class="stat-label">Proxies Activos</div>
             </div>
         </div>
 
         <!-- Sección Telegram -->
         <div class="telegram-section">
             <h3>📱 Notificaciones Telegram</h3>
-            <p>Recibe alertas de precios, ofertas y sniper directamente en tu Telegram</p>
-            <br>
-            <button class="btn" onclick="enviarPruebaTelegram()">🔔 Enviar Prueba</button>
-            <button class="btn" onclick="activarAlertas()">✅ Activar Alertas</button>
-            <button class="btn" onclick="desactivarAlertas()">❌ Desactivar Alertas</button>
+            <p class="descripcion">Recibe alertas de precios, ofertas y sniper directamente en tu Telegram</p>
+            <button class="btn btn-telegram" onclick="enviarPruebaTelegram()">🔔 Enviar Prueba</button>
+            <button class="btn btn-success" onclick="activarAlertas()">✅ Activar Alertas</button>
+            <button class="btn btn-danger" onclick="desactivarAlertas()">❌ Desactivar Alertas</button>
+        </div>
+
+        <!-- Sección Proxies -->
+        <div class="proxy-section">
+            <h3>🔒 Gestión de Proxies</h3>
+            <p class="descripcion">Añade y gestiona tus proxies para evitar bloqueos y hacer compras más seguras</p>
+            <button class="btn btn-proxy" onclick="mostrarAgregarProxy()">➕ Agregar Proxy</button>
+            <button class="btn btn-secondary" onclick="verListaProxies()">📋 Ver Lista</button>
+            <button class="btn btn-success" onclick="testearProxies()">🧪 Testear Proxies</button>
+            <button class="btn btn-danger" onclick="eliminarProxiesInactivos()">🗑️ Eliminar Inactivos</button>
+        </div>
+
+        <!-- Sección Login en Tiendas -->
+        <div class="login-section">
+            <h3>🔐 Login en Tiendas</h3>
+            <p class="descripcion">Guarda tus credenciales e inicia sesión automáticamente en las tiendas</p>
+            <button class="btn btn-login" onclick="mostrarGestionLogin()">🔑 Gestionar Logins</button>
+            <button class="btn btn-secondary" onclick="verSesionesActivas()">👤 Sesiones Activas</button>
         </div>
 
         <!-- Sección Sniper -->
         <div class="sniper-section">
             <h3>⚡ Sniper Cardmarket</h3>
-            <p>Monitorea Cardmarket en tiempo real para encontrar las mejores ofertas</p>
-            <br>
+            <p class="descripcion">Monitorea Cardmarket en tiempo real para encontrar las mejores ofertas</p>
             <button class="btn" onclick="activarSniper()">🎯 Activar Sniper</button>
-            <button class="btn" onclick="verEstadoSniper()">📊 Ver Estado</button>
+            <button class="btn btn-secondary" onclick="verEstadoSniper()">📊 Ver Estado</button>
+        </div>
+
+        <!-- Sección Pagos -->
+        <div class="pagos-section">
+            <h3>💳 Sistema de Pagos</h3>
+            <p class="descripcion">Gestiona tus métodos de pago y realiza compras automáticas</p>
+            <button class="btn btn-success" onclick="crearPerfilPago()">➕ Crear Perfil de Pago</button>
+            <button class="btn btn-secondary" onclick="verPerfilesPago()">👤 Ver Perfiles</button>
+            <button class="btn btn-secondary" onclick="verTransacciones()">📊 Ver Transacciones</button>
         </div>
 
         <!-- Búsqueda -->
@@ -375,9 +725,23 @@
             {% for tienda in tiendas %}
             <div class="tienda-item" onclick="seleccionarTienda({{ tienda.id }})" id="tienda-{{ tienda.id }}">
                 <div class="tienda-nombre">{{ tienda.nombre }}</div>
-                <div class="tienda-categoria">{{ tienda.categoria }}</div>
+                <div class="tienda-categoria">{{ tienda.categoria }} - {{ tienda.moneda }}</div>
+                <div class="tienda-login login-inactivo" id="login-estado-{{ tienda.id }}">🔒 Sin sesión</div>
+                <br>
+                <button class="btn btn-login" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;" onclick="event.stopPropagation(); gestionarLoginTienda({{ tienda.id }}, '{{ tienda.nombre }}')">
+                    🔑 Login
+                </button>
             </div>
             {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h2 id="modal-titulo">Gestión</h2>
+            <div id="modal-contenido"></div>
         </div>
     </div>
 
@@ -406,6 +770,386 @@
             mostrarNotificacion(`Tienda seleccionada`, 'info');
         }
 
+        // ============================================
+        // FUNCIONES DE PROXIES
+        // ============================================
+        function mostrarAgregarProxy() {
+            const modal = document.getElementById('modal');
+            const contenido = document.getElementById('modal-contenido');
+            document.getElementById('modal-titulo').textContent = '🔒 Agregar Proxy';
+            
+            contenido.innerHTML = `
+                <h3>Agregar Nuevo Proxy</h3>
+                <div class="form-group">
+                    <label>Formato del Proxy</label>
+                    <select id="proxy-formato">
+                        <option value="ip:puerto">IP:Puerto (ej: 192.168.1.1:8080)</option>
+                        <option value="ip:puerto:user:pass">IP:Puerto:Usuario:Contraseña</option>
+                        <option value="http">HTTP://IP:Puerto</option>
+                        <option value="socks5">SOCKS5://IP:Puerto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Proxies (uno por línea)</label>
+                    <textarea id="proxy-lista" placeholder="192.168.1.1:8080&#10;192.168.1.2:8080&#10;192.168.1.3:8080"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Proxy</label>
+                    <select id="proxy-tipo">
+                        <option value="http">HTTP</option>
+                        <option value="https">HTTPS</option>
+                        <option value="socks4">SOCKS4</option>
+                        <option value="socks5">SOCKS5</option>
+                    </select>
+                </div>
+                <button class="btn btn-proxy" onclick="agregarProxies()">➕ Agregar Proxies</button>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        async function agregarProxies() {
+            const lista = document.getElementById('proxy-lista').value;
+            const tipo = document.getElementById('proxy-tipo').value;
+            const formato = document.getElementById('proxy-formato').value;
+
+            if (!lista) {
+                mostrarNotificacion('Ingresa al menos un proxy', 'error');
+                return;
+            }
+
+            const proxies = lista.split('\n').filter(p => p.trim());
+            
+            try {
+                const response = await fetch('/api/proxies/agregar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        proxies: proxies,
+                        tipo: tipo,
+                        formato: formato
+                    })
+                });
+
+                const data = await response.json();
+                mostrarNotificacion(data.mensaje, 'success');
+                cerrarModal();
+                actualizarProxiesCount();
+            } catch (error) {
+                mostrarNotificacion('Error al agregar proxies', 'error');
+            }
+        }
+
+        async function verListaProxies() {
+            try {
+                const response = await fetch('/api/proxies/lista');
+                const data = await response.json();
+                
+                const modal = document.getElementById('modal');
+                const contenido = document.getElementById('modal-contenido');
+                document.getElementById('modal-titulo').textContent = '📋 Lista de Proxies';
+                
+                if (data.length === 0) {
+                    contenido.innerHTML = '<h3>No hay proxies configurados</h3>';
+                } else {
+                    let html = '<h3>Proxies Configurados:</h3>';
+                    html += '<div class="proxy-list">';
+                    data.forEach(proxy => {
+                        const statusClass = proxy.activo ? 'active' : 'inactive';
+                        const statusText = proxy.activo ? '✅ Activo' : '❌ Inactivo';
+                        html += `
+                            <div class="proxy-item">
+                                <div class="proxy-info">
+                                    <div class="proxy-ip">${proxy.ip}:${proxy.puerto}</div>
+                                    <div class="proxy-details">Tipo: ${proxy.tipo} | País: ${proxy.pais || 'Desconocido'}</div>
+                                </div>
+                                <span class="proxy-status ${statusClass}">${statusText}</span>
+                                <button class="btn btn-danger" style="margin-left: 10px; font-size: 12px; padding: 5px 10px;" onclick="eliminarProxy(${proxy.id})">🗑️</button>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    contenido.innerHTML = html;
+                }
+                
+                modal.style.display = 'block';
+            } catch (error) {
+                mostrarNotificacion('Error al ver proxies', 'error');
+            }
+        }
+
+        async function eliminarProxy(id) {
+            try {
+                const response = await fetch(`/api/proxies/eliminar/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                mostrarNotificacion(data.mensaje, 'success');
+                verListaProxies();
+                actualizarProxiesCount();
+            } catch (error) {
+                mostrarNotificacion('Error al eliminar proxy', 'error');
+            }
+        }
+
+        async function testearProxies() {
+            try {
+                mostrarNotificacion('🧪 Testeando proxies...', 'info');
+                const response = await fetch('/api/proxies/testear', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                mostrarNotificacion(data.mensaje, 'success');
+                actualizarProxiesCount();
+            } catch (error) {
+                mostrarNotificacion('Error al testear proxies', 'error');
+            }
+        }
+
+        async function eliminarProxiesInactivos() {
+            try {
+                const response = await fetch('/api/proxies/eliminar-inactivos', {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                mostrarNotificacion(data.mensaje, 'success');
+                actualizarProxiesCount();
+            } catch (error) {
+                mostrarNotificacion('Error al eliminar proxies inactivos', 'error');
+            }
+        }
+
+        async function actualizarProxiesCount() {
+            try {
+                const response = await fetch('/api/proxies/lista');
+                const data = await response.json();
+                const activos = data.filter(p => p.activo).length;
+                document.getElementById('proxies-count').textContent = activos;
+            } catch (error) {
+                console.error('Error al actualizar proxies');
+            }
+        }
+
+        // ============================================
+        // FUNCIONES DE LOGIN EN TIENDAS
+        // ============================================
+        function gestionarLoginTienda(tiendaId, tiendaNombre) {
+            const modal = document.getElementById('modal');
+            const contenido = document.getElementById('modal-contenido');
+            document.getElementById('modal-titulo').textContent = `🔐 Login en ${tiendaNombre}`;
+            
+            contenido.innerHTML = `
+                <h3>Gestionar acceso a ${tiendaNombre}</h3>
+                <div class="form-group">
+                    <label>Email / Usuario</label>
+                    <input type="email" id="login-email" placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+                <button class="btn btn-login" onclick="guardarCredenciales(${tiendaId})">💾 Guardar Credenciales</button>
+                <button class="btn btn-success" onclick="iniciarSesionTienda(${tiendaId})">🔑 Iniciar Sesión</button>
+                <button class="btn btn-danger" onclick="cerrarSesionTienda(${tiendaId})">🔒 Cerrar Sesión</button>
+                <button class="btn btn-secondary" onclick="verificarSesionTienda(${tiendaId})">🔍 Verificar Sesión</button>
+                <br><br>
+                <div class="url-display">
+                    <strong>URL de Login:</strong><br>
+                    <a href="#" onclick="window.open('https://www.${tiendaNombre.toLowerCase().replace(/ /g, '')}.com/login', '_blank')">
+                        Ir a la página de login de ${tiendaNombre}
+                    </a>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        async function guardarCredenciales(tiendaId) {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                mostrarNotificacion('Completa todos los campos', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login/guardar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tienda_id: tiendaId,
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                mostrarNotificacion(data.mensaje || data.error, data.error ? 'error' : 'success');
+                if (!data.error) {
+                    document.getElementById('login-email').value = '';
+                    document.getElementById('login-password').value = '';
+                }
+            } catch (error) {
+                mostrarNotificacion('Error al guardar credenciales', 'error');
+            }
+        }
+
+        async function iniciarSesionTienda(tiendaId) {
+            try {
+                const response = await fetch('/api/login/iniciar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tienda_id: tiendaId
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    mostrarNotificacion(data.error, 'error');
+                } else {
+                    mostrarNotificacion(`✅ Sesión iniciada en ${data.tienda}`, 'success');
+                    actualizarEstadoLogin(tiendaId, true);
+                    cerrarModal();
+                }
+            } catch (error) {
+                mostrarNotificacion('Error al iniciar sesión', 'error');
+            }
+        }
+
+        async function cerrarSesionTienda(tiendaId) {
+            try {
+                const response = await fetch('/api/login/cerrar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tienda_id: tiendaId
+                    })
+                });
+
+                const data = await response.json();
+                mostrarNotificacion(data.mensaje || data.error, data.error ? 'error' : 'success');
+                if (!data.error) {
+                    actualizarEstadoLogin(tiendaId, false);
+                    cerrarModal();
+                }
+            } catch (error) {
+                mostrarNotificacion('Error al cerrar sesión', 'error');
+            }
+        }
+
+        async function verificarSesionTienda(tiendaId) {
+            try {
+                const response = await fetch('/api/login/verificar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tienda_id: tiendaId
+                    })
+                });
+
+                const data = await response.json();
+                if (data.sesion_activa) {
+                    mostrarNotificacion(`✅ Sesión activa: ${data.sesion.email}`, 'success');
+                } else {
+                    mostrarNotificacion('❌ No hay sesión activa', 'error');
+                }
+            } catch (error) {
+                mostrarNotificacion('Error al verificar sesión', 'error');
+            }
+        }
+
+        function mostrarGestionLogin() {
+            const modal = document.getElementById('modal');
+            const contenido = document.getElementById('modal-contenido');
+            document.getElementById('modal-titulo').textContent = '🔐 Gestión de Logins';
+            
+            let html = '<h3>Selecciona una tienda para gestionar su login:</h3>';
+            html += '<div class="tiendas-grid" style="margin-top: 20px;">';
+            
+            const tiendas = [
+                {id: 1, nombre: 'Darizard9'}, {id: 2, nombre: 'Pokemillon'}, {id: 3, nombre: 'UnSobreMas'},
+                {id: 4, nombre: 'ToysRUs'}, {id: 5, nombre: 'TCGFactory'}, {id: 6, nombre: 'Amazon'},
+                {id: 7, nombre: 'eBay'}, {id: 8, nombre: 'Carrefour'}, {id: 9, nombre: 'Game'},
+                {id: 10, nombre: 'El Corte Ingles'}, {id: 11, nombre: 'Topps'}, {id: 12, nombre: 'Turolgames'},
+                {id: 13, nombre: 'Flashstore'}, {id: 14, nombre: 'Pokemon Center'}, {id: 15, nombre: 'Cardmarket'}
+            ];
+            
+            tiendas.forEach(tienda => {
+                html += `
+                    <div class="tienda-item" onclick="gestionarLoginTienda(${tienda.id}, '${tienda.nombre}')">
+                        <div class="tienda-nombre">${tienda.nombre}</div>
+                        <div class="tienda-categoria">Gestionar Login</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            contenido.innerHTML = html;
+            modal.style.display = 'block';
+        }
+
+        async function verSesionesActivas() {
+            try {
+                const response = await fetch('/api/login/sesiones');
+                const data = await response.json();
+                
+                const modal = document.getElementById('modal');
+                const contenido = document.getElementById('modal-contenido');
+                document.getElementById('modal-titulo').textContent = '👤 Sesiones Activas';
+                
+                if (Object.keys(data).length === 0) {
+                    contenido.innerHTML = '<h3>No hay sesiones activas</h3>';
+                } else {
+                    let html = '<h3>Sesiones Activas:</h3>';
+                    for (let tiendaId in data) {
+                        const sesion = data[tiendaId];
+                        html += `
+                            <div class="result-item">
+                                <div>
+                                    <div class="store">${sesion.tienda}</div>
+                                    <div>👤 ${sesion.email}</div>
+                                    <small>${sesion.fecha_inicio}</small>
+                                </div>
+                                <div>
+                                    <span style="color: ${sesion.activa ? '#4caf50' : '#f44336'}; font-weight: 600;">
+                                        ${sesion.activa ? '✅ Activa' : '❌ Inactiva'}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    contenido.innerHTML = html;
+                }
+                
+                modal.style.display = 'block';
+            } catch (error) {
+                mostrarNotificacion('Error al ver sesiones', 'error');
+            }
+        }
+
+        function actualizarEstadoLogin(tiendaId, activo) {
+            const elemento = document.getElementById(`login-estado-${tiendaId}`);
+            if (elemento) {
+                elemento.className = `tienda-login ${activo ? 'login-activo' : 'login-inactivo'}`;
+                elemento.textContent = activo ? '✅ Sesión activa' : '🔒 Sin sesión';
+            }
+        }
+
+        // ============================================
+        // FUNCIONES DE BÚSQUEDA
+        // ============================================
         async function buscarProducto() {
             const producto = document.getElementById('producto-busqueda').value;
             if (!producto) {
@@ -444,17 +1188,30 @@
 
             let html = '<h4>Resultados:</h4>';
             resultados.forEach(resultado => {
+                const sesionEstado = resultado.sesion_activa ? '✅ Sesión activa' : '🔒 Sin sesión';
+                const sesionClass = resultado.sesion_activa ? 'login-activo' : 'login-inactivo';
+                
                 html += `
                     <div class="result-item">
                         <div>
                             <div class="store">${resultado.tienda}</div>
                             <div>${resultado.producto}</div>
-                            <small>${resultado.timestamp}</small>
+                            <small>${resultado.timestamp} | ${resultado.moneda}</small>
+                            <div class="tienda-login ${sesionClass}" style="margin-top: 5px;">${sesionEstado}</div>
+                            <div class="url-display">
+                                <a href="${resultado.url}" target="_blank">🔗 Ver búsqueda en ${resultado.tienda}</a>
+                            </div>
+                            ${resultado.requiere_login && !resultado.sesion_activa ? 
+                                `<button class="btn btn-login" style="margin-top: 5px; font-size: 12px; padding: 8px 12px;" onclick="gestionarLoginTienda(${resultado.tienda_id}, '${resultado.tienda}')">
+                                    🔑 Iniciar sesión para comprar
+                                </button>` : ''}
                         </div>
                         <div>
                             <span class="price">${resultado.precio}€</span>
                             <br>
-                            <a href="${resultado.url}" target="_blank">Ver oferta</a>
+                            <button class="btn btn-success" onclick="comprarProducto('${resultado.producto}', '${resultado.tienda}', ${resultado.precio})" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;">
+                                💳 Comprar
+                            </button>
                         </div>
                     </div>
                 `;
@@ -463,6 +1220,9 @@
             contenedor.innerHTML = html;
         }
 
+        // ============================================
+        // FUNCIONES DE MONITOREO
+        // ============================================
         async function agregarMonitoreo() {
             const producto = document.getElementById('producto-monitoreo').value;
             const precio = document.getElementById('precio-objetivo').value;
@@ -522,6 +1282,9 @@
             }
         }
 
+        // ============================================
+        // FUNCIONES DE TELEGRAM
+        // ============================================
         async function enviarPruebaTelegram() {
             try {
                 const response = await fetch('/telegram/test', {
@@ -560,6 +1323,9 @@
             }
         }
 
+        // ============================================
+        // FUNCIONES DE SNIPER
+        // ============================================
         async function activarSniper() {
             try {
                 const response = await fetch('/api/sniper/activar', {
@@ -583,11 +1349,205 @@
             }
         }
 
-        // Cargar monitoreo al inicio
+        // ============================================
+        // FUNCIONES DE PAGOS
+        // ============================================
+        function crearPerfilPago() {
+            const modal = document.getElementById('modal');
+            const contenido = document.getElementById('modal-contenido');
+            document.getElementById('modal-titulo').textContent = '💳 Crear Perfil de Pago';
+            
+            contenido.innerHTML = `
+                <h3>Crear Perfil de Pago</h3>
+                <div class="form-group">
+                    <label>Nombre del Titular</label>
+                    <input type="text" id="pago-nombre" placeholder="Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="pago-email" placeholder="juan@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <select id="pago-metodo">
+                        <option value="paypal">PayPal</option>
+                        <option value="tarjeta">Tarjeta de Crédito</option>
+                        <option value="transferencia">Transferencia Bancaria</option>
+                        <option value="bitcoin">Bitcoin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Datos del Método</label>
+                    <input type="text" id="pago-datos" placeholder="Email de PayPal / Número de tarjeta / IBAN / Wallet BTC">
+                </div>
+                <button class="btn btn-success" onclick="guardarPerfilPago()">💾 Guardar Perfil</button>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        async function guardarPerfilPago() {
+            const nombre = document.getElementById('pago-nombre').value;
+            const email = document.getElementById('pago-email').value;
+            const metodo = document.getElementById('pago-metodo').value;
+            const datos = document.getElementById('pago-datos').value;
+
+            if (!nombre || !email || !datos) {
+                mostrarNotificacion('Completa todos los campos', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/pagos/perfil', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: nombre,
+                        email: email,
+                        metodo: metodo,
+                        datos: { info: datos }
+                    })
+                });
+
+                const data = await response.json();
+                mostrarNotificacion('Perfil creado exitosamente', 'success');
+                cerrarModal();
+            } catch (error) {
+                mostrarNotificacion('Error al crear perfil', 'error');
+            }
+        }
+
+        async function verPerfilesPago() {
+            try {
+                const response = await fetch('/api/pagos/perfil');
+                const data = await response.json();
+                mostrarNotificacion('Perfiles de pago consultados', 'info');
+            } catch (error) {
+                mostrarNotificacion('Error al ver perfiles', 'error');
+            }
+        }
+
+        async function verTransacciones() {
+            try {
+                const response = await fetch('/api/pagos/transacciones');
+                const data = await response.json();
+                
+                const modal = document.getElementById('modal');
+                const contenido = document.getElementById('modal-contenido');
+                document.getElementById('modal-titulo').textContent = '📊 Transacciones';
+                
+                if (data.length === 0) {
+                    contenido.innerHTML = '<h3>No hay transacciones</h3>';
+                } else {
+                    let html = '<h3>Transacciones:</h3>';
+                    data.forEach(t => {
+                        html += `
+                            <div class="result-item">
+                                <div>
+                                    <div class="store">${t.tienda}</div>
+                                    <div>${t.producto}</div>
+                                    <small>${t.fecha}</small>
+                                </div>
+                                <div>
+                                    <span class="price">${t.total}€</span>
+                                    <br>
+                                    <small>${t.estado}</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    contenido.innerHTML = html;
+                }
+                
+                modal.style.display = 'block';
+            } catch (error) {
+                mostrarNotificacion('Error al ver transacciones', 'error');
+            }
+        }
+
+        async function comprarProducto(producto, tienda, precio) {
+            const modal = document.getElementById('modal');
+            const contenido = document.getElementById('modal-contenido');
+            document.getElementById('modal-titulo').textContent = '💳 Comprar Producto';
+            
+            contenido.innerHTML = `
+                <h3>Comprar: ${producto}</h3>
+                <p><strong>Tienda:</strong> ${tienda}</p>
+                <p><strong>Precio:</strong> ${precio}€</p>
+                <div class="form-group">
+                    <label>Selecciona Perfil de Pago</label>
+                    <select id="compra-perfil">
+                        <option value="">Selecciona un perfil...</option>
+                        <option value="1">Perfil 1 - PayPal</option>
+                        <option value="2">Perfil 2 - Tarjeta</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="procesarCompra('${producto}', '${tienda}', ${precio})">💳 Procesar Pago</button>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        async function procesarCompra(producto, tienda, precio) {
+            const perfilId = document.getElementById('compra-perfil').value;
+            
+            if (!perfilId) {
+                mostrarNotificacion('Selecciona un perfil de pago', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/pagos/procesar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        perfil_id: parseInt(perfilId),
+                        monto: precio,
+                        producto: producto,
+                        tienda: tienda
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    mostrarNotificacion(data.error, 'error');
+                } else {
+                    mostrarNotificacion(`Pago procesado: ${data.total}€`, 'success');
+                    cerrarModal();
+                    actualizarTransacciones();
+                }
+            } catch (error) {
+                mostrarNotificacion('Error al procesar pago', 'error');
+            }
+        }
+
+        async function actualizarTransacciones() {
+            try {
+                const response = await fetch('/api/pagos/transacciones');
+                const data = await response.json();
+                document.getElementById('transacciones-count').textContent = data.length;
+            } catch (error) {
+                console.error('Error al actualizar transacciones');
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Cargar datos al inicio
         actualizarListaMonitoreo();
+        actualizarTransacciones();
+        actualizarProxiesCount();
 
         // Actualizar cada 30 segundos
         setInterval(actualizarListaMonitoreo, 30000);
+        setInterval(actualizarTransacciones, 60000);
+        setInterval(actualizarProxiesCount, 30000);
     </script>
 </body>
 </html>
