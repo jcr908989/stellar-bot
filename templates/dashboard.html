@@ -160,6 +160,12 @@
         .btn-proxy:hover {
             background: #f57c00;
         }
+        .btn-url {
+            background: #9c27b0;
+        }
+        .btn-url:hover {
+            background: #7b1fa2;
+        }
         .result-item {
             padding: 15px;
             background: #2a2a2a;
@@ -427,6 +433,26 @@
             margin-right: 10px;
             margin-bottom: 10px;
         }
+        .url-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .url-section:hover {
+            border-color: #9c27b0;
+            box-shadow: 0 4px 20px rgba(156, 39, 176, 0.2);
+        }
+        .url-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        .url-section .btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
         .form-group {
             margin-bottom: 15px;
         }
@@ -475,7 +501,7 @@
             padding: 20px;
             border-radius: 12px;
             width: 80%;
-            max-width: 500px;
+            max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid #333;
@@ -661,6 +687,14 @@
             <button class="btn btn-danger" onclick="desactivarAlertas()">❌ Desactivar Alertas</button>
         </div>
 
+        <!-- Sección URLs de Tiendas -->
+        <div class="url-section">
+            <h3>🔗 URLs de Tiendas</h3>
+            <p class="descripcion">Configura las URLs de búsqueda, login y compra para cada tienda</p>
+            <button class="btn btn-url" onclick="verGestionUrls()">🔗 Gestionar URLs</button>
+            <button class="btn btn-secondary" onclick="verTodasUrls()">📋 Ver Todas las URLs</button>
+        </div>
+
         <!-- Sección Proxies -->
         <div class="proxy-section">
             <h3>🔒 Gestión de Proxies</h3>
@@ -731,6 +765,9 @@
                 <button class="btn btn-login" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;" onclick="event.stopPropagation(); gestionarLoginTienda({{ tienda.id }}, '{{ tienda.nombre }}')">
                     🔑 Login
                 </button>
+                <button class="btn btn-url" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;" onclick="event.stopPropagation(); gestionarUrlsTienda({{ tienda.id }}, '{{ tienda.nombre }}')">
+                    🔗 URLs
+                </button>
             </div>
             {% endfor %}
         </div>
@@ -768,6 +805,179 @@
             });
             document.getElementById(`tienda-${id}`).classList.add('selected');
             mostrarNotificacion(`Tienda seleccionada`, 'info');
+        }
+
+        // ============================================
+        // FUNCIONES DE URLs DE TIENDAS
+        // ============================================
+        async function gestionarUrlsTienda(tiendaId, tiendaNombre) {
+            try {
+                const response = await fetch('/api/tiendas/urls');
+                const tiendas = await response.json();
+                const tienda = tiendas.find(t => t.id === tiendaId);
+                
+                if (!tienda) {
+                    mostrarNotificacion('Tienda no encontrada', 'error');
+                    return;
+                }
+                
+                const modal = document.getElementById('modal');
+                const contenido = document.getElementById('modal-contenido');
+                document.getElementById('modal-titulo').textContent = `🔗 URLs de ${tiendaNombre}`;
+                
+                contenido.innerHTML = `
+                    <h3>Configurar URLs para ${tiendaNombre}</h3>
+                    <div class="form-group">
+                        <label>URL de la Tienda</label>
+                        <input type="text" id="url-tienda" value="${tienda.url}" placeholder="https://www.tienda.com">
+                    </div>
+                    <div class="form-group">
+                        <label>URL de Búsqueda (usa {producto} para el nombre)</label>
+                        <input type="text" id="url-busqueda" value="${tienda.url_busqueda}" placeholder="https://www.tienda.com/search?q={producto}">
+                    </div>
+                    <div class="form-group">
+                        <label>URL de Login</label>
+                        <input type="text" id="url-login" value="${tienda.url_login}" placeholder="https://www.tienda.com/login">
+                    </div>
+                    <div class="form-group">
+                        <label>URL de Compra/Checkout</label>
+                        <input type="text" id="url-compra" value="${tienda.url_compra}" placeholder="https://www.tienda.com/checkout">
+                    </div>
+                    <button class="btn btn-url" onclick="guardarUrlsTienda(${tiendaId})">💾 Guardar URLs</button>
+                    <button class="btn btn-secondary" onclick="testearUrlsTienda(${tiendaId})">🧪 Testear URLs</button>
+                    <br><br>
+                    <div class="url-display">
+                        <strong>Vista previa:</strong><br>
+                        <p>🔍 Búsqueda: <a href="${tienda.url_busqueda.replace('{producto}', 'ejemplo')}" target="_blank">${tienda.url_busqueda}</a></p>
+                        <p>🔑 Login: <a href="${tienda.url_login}" target="_blank">${tienda.url_login}</a></p>
+                        <p>🛒 Compra: <a href="${tienda.url_compra}" target="_blank">${tienda.url_compra}</a></p>
+                    </div>
+                `;
+                
+                modal.style.display = 'block';
+            } catch (error) {
+                mostrarNotificacion('Error al cargar URLs', 'error');
+            }
+        }
+
+        async function guardarUrlsTienda(tiendaId) {
+            const urlTienda = document.getElementById('url-tienda').value;
+            const urlBusqueda = document.getElementById('url-busqueda').value;
+            const urlLogin = document.getElementById('url-login').value;
+            const urlCompra = document.getElementById('url-compra').value;
+
+            if (!urlTienda || !urlBusqueda || !urlLogin || !urlCompra) {
+                mostrarNotificacion('Completa todas las URLs', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/tiendas/urls/actualizar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tienda_id: tiendaId,
+                        url_tienda: urlTienda,
+                        url_busqueda: urlBusqueda,
+                        url_login: urlLogin,
+                        url_compra: urlCompra
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    mostrarNotificacion(data.error, 'error');
+                } else {
+                    mostrarNotificacion(data.mensaje, 'success');
+                    cerrarModal();
+                }
+            } catch (error) {
+                mostrarNotificacion('Error al guardar URLs', 'error');
+            }
+        }
+
+        async function testearUrlsTienda(tiendaId) {
+            try {
+                const response = await fetch('/api/tiendas/urls/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tienda_id: tiendaId
+                    })
+                });
+
+                const data = await response.json();
+                mostrarNotificacion(`URLs de ${data.tienda} verificadas`, 'success');
+            } catch (error) {
+                mostrarNotificacion('Error al testear URLs', 'error');
+            }
+        }
+
+        async function verGestionUrls() {
+            try {
+                const response = await fetch('/api/tiendas/urls');
+                const tiendas = await response.json();
+                
+                const modal = document.getElementById('modal');
+                const contenido = document.getElementById('modal-contenido');
+                document.getElementById('modal-titulo').textContent = '🔗 Gestión de URLs';
+                
+                let html = '<h3>Selecciona una tienda para configurar sus URLs:</h3>';
+                html += '<div class="tiendas-grid" style="margin-top: 20px;">';
+                
+                tiendas.forEach(tienda => {
+                    html += `
+                        <div class="tienda-item" onclick="gestionarUrlsTienda(${tienda.id}, '${tienda.nombre}')">
+                            <div class="tienda-nombre">${tienda.nombre}</div>
+                            <div class="tienda-categoria">🔗 Configurar URLs</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                contenido.innerHTML = html;
+                modal.style.display = 'block';
+            } catch (error) {
+                mostrarNotificacion('Error al cargar tiendas', 'error');
+            }
+        }
+
+        async function verTodasUrls() {
+            try {
+                const response = await fetch('/api/tiendas/urls');
+                const tiendas = await response.json();
+                
+                const modal = document.getElementById('modal');
+                const contenido = document.getElementById('modal-contenido');
+                document.getElementById('modal-titulo').textContent = '📋 Todas las URLs';
+                
+                let html = '<h3>URLs configuradas:</h3>';
+                tiendas.forEach(tienda => {
+                    html += `
+                        <div class="result-item" style="flex-direction: column; align-items: flex-start;">
+                            <div class="store">${tienda.nombre}</div>
+                            <div class="url-display" style="width: 100%;">
+                                <p><strong>🏪 Tienda:</strong> <a href="${tienda.url}" target="_blank">${tienda.url}</a></p>
+                                <p><strong>🔍 Búsqueda:</strong> <a href="${tienda.url_busqueda.replace('{producto}', 'ejemplo')}" target="_blank">${tienda.url_busqueda}</a></p>
+                                <p><strong>🔑 Login:</strong> <a href="${tienda.url_login}" target="_blank">${tienda.url_login}</a></p>
+                                <p><strong>🛒 Compra:</strong> <a href="${tienda.url_compra}" target="_blank">${tienda.url_compra}</a></p>
+                            </div>
+                            <button class="btn btn-url" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;" onclick="gestionarUrlsTienda(${tienda.id}, '${tienda.nombre}')">
+                                ✏️ Editar
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                contenido.innerHTML = html;
+                modal.style.display = 'block';
+            } catch (error) {
+                mostrarNotificacion('Error al cargar URLs', 'error');
+            }
         }
 
         // ============================================
@@ -1199,7 +1409,10 @@
                             <small>${resultado.timestamp} | ${resultado.moneda}</small>
                             <div class="tienda-login ${sesionClass}" style="margin-top: 5px;">${sesionEstado}</div>
                             <div class="url-display">
-                                <a href="${resultado.url}" target="_blank">🔗 Ver búsqueda en ${resultado.tienda}</a>
+                                <a href="${resultado.url}" target="_blank">🔍 Ver búsqueda en ${resultado.tienda}</a>
+                            </div>
+                            <div class="url-display">
+                                <a href="${resultado.url_compra}" target="_blank">🛒 Ir a comprar en ${resultado.tienda}</a>
                             </div>
                             ${resultado.requiere_login && !resultado.sesion_activa ? 
                                 `<button class="btn btn-login" style="margin-top: 5px; font-size: 12px; padding: 8px 12px;" onclick="gestionarLoginTienda(${resultado.tienda_id}, '${resultado.tienda}')">
