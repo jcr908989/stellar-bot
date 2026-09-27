@@ -1045,7 +1045,29 @@ def api_pagos_crear_perfil():
     if not all([nombre, email, metodo]):
         return jsonify({"error": "Datos incompletos"}), 400
     
+    # Validar datos según método
+    if metodo == 'tarjeta':
+        if not all([datos.get('numero_tarjeta'), datos.get('mes_caducidad'), 
+                    datos.get('anio_caducidad'), datos.get('cvv')]):
+            return jsonify({"error": "Datos de tarjeta incompletos"}), 400
+        
+        # Enmascarar número para seguridad
+        numero = datos['numero_tarjeta']
+        datos['ultimos_4'] = numero[-4:]
+        datos['numero_tarjeta'] = f"•••• •••• •••• {numero[-4:]}"
+        datos['cvv'] = "•••"
+    
     perfil = sistema_pagos.crear_perfil_pago(nombre, email, metodo, datos)
+    
+    enviar_telegram(f"""
+💳 <b>Nuevo perfil de pago creado</b>
+
+👤 <b>Nombre:</b> {nombre}
+📧 <b>Email:</b> {email}
+💳 <b>Método:</b> {metodo}
+✅ <b>Estado:</b> Guardado correctamente
+""")
+    
     return jsonify(perfil)
 
 @app.route('/api/pagos/procesar', methods=['POST'])
