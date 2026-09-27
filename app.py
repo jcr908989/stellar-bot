@@ -11,7 +11,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # CONFIGURACIÓN DE TELEGRAM
 # ============================================
 TELEGRAM_TOKEN = "8871598841:AAHszVIUkwGoxYklkoHeTdNSZ68MuPlzqKw"  # ← Pega tu token de BotFather
-TELEGRAM_CHAT_ID = ""  # ← 8514421716
+TELEGRAM_CHAT_ID = "8514421716"  # ← Pega tu chat ID
 
 def enviar_telegram(mensaje):
     """Envía una notificación a Telegram"""
@@ -48,7 +48,7 @@ credenciales_tiendas = {}
 proxies_lista = []
 
 # ============================================
-# LISTA DE TIENDAS CON LOGIN
+# LISTA DE TIENDAS CON URLs CONFIGURABLES
 # ============================================
 TIENDAS = [
     {
@@ -57,6 +57,7 @@ TIENDAS = [
         "url": "https://www.darizard9.com", 
         "url_busqueda": "https://www.darizard9.com/search?q={producto}",
         "url_login": "https://www.darizard9.com/login",
+        "url_compra": "https://www.darizard9.com/checkout",
         "categoria": "TCG",
         "moneda": "EUR",
         "requiere_login": True
@@ -67,6 +68,7 @@ TIENDAS = [
         "url": "https://www.pokemillon.com", 
         "url_busqueda": "https://www.pokemillon.com/buscar?q={producto}",
         "url_login": "https://www.pokemillon.com/login",
+        "url_compra": "https://www.pokemillon.com/checkout",
         "categoria": "TCG",
         "moneda": "EUR",
         "requiere_login": True
@@ -77,6 +79,7 @@ TIENDAS = [
         "url": "https://www.unsobremas.com", 
         "url_busqueda": "https://www.unsobremas.com/catalogsearch/result/?q={producto}",
         "url_login": "https://www.unsobremas.com/customer/account/login",
+        "url_compra": "https://www.unsobremas.com/checkout/cart",
         "categoria": "TCG",
         "moneda": "EUR",
         "requiere_login": True
@@ -87,6 +90,7 @@ TIENDAS = [
         "url": "https://www.toysrus.es", 
         "url_busqueda": "https://www.toysrus.es/search?q={producto}",
         "url_login": "https://www.toysrus.es/login",
+        "url_compra": "https://www.toysrus.es/checkout",
         "categoria": "Juguetes",
         "moneda": "EUR",
         "requiere_login": True
@@ -97,6 +101,7 @@ TIENDAS = [
         "url": "https://www.tcgfactory.com", 
         "url_busqueda": "https://www.tcgfactory.com/search?q={producto}",
         "url_login": "https://www.tcgfactory.com/login",
+        "url_compra": "https://www.tcgfactory.com/checkout",
         "categoria": "TCG",
         "moneda": "EUR",
         "requiere_login": True
@@ -107,6 +112,7 @@ TIENDAS = [
         "url": "https://www.amazon.es", 
         "url_busqueda": "https://www.amazon.es/s?k={producto}",
         "url_login": "https://www.amazon.es/ap/signin",
+        "url_compra": "https://www.amazon.es/gp/cart/view.html",
         "categoria": "General",
         "moneda": "EUR",
         "requiere_login": True
@@ -117,6 +123,7 @@ TIENDAS = [
         "url": "https://www.ebay.es", 
         "url_busqueda": "https://www.ebay.es/sch/i.html?_nkw={producto}",
         "url_login": "https://www.ebay.es/signin",
+        "url_compra": "https://cart.ebay.es",
         "categoria": "General",
         "moneda": "EUR",
         "requiere_login": True
@@ -127,6 +134,7 @@ TIENDAS = [
         "url": "https://www.carrefour.es", 
         "url_busqueda": "https://www.carrefour.es/buscar?q={producto}",
         "url_login": "https://www.carrefour.es/login",
+        "url_compra": "https://www.carrefour.es/checkout",
         "categoria": "General",
         "moneda": "EUR",
         "requiere_login": True
@@ -137,6 +145,7 @@ TIENDAS = [
         "url": "https://www.game.es", 
         "url_busqueda": "https://www.game.es/buscar?q={producto}",
         "url_login": "https://www.game.es/login",
+        "url_compra": "https://www.game.es/checkout",
         "categoria": "Videojuegos",
         "moneda": "EUR",
         "requiere_login": True
@@ -147,6 +156,7 @@ TIENDAS = [
         "url": "https://www.elcorteingles.es", 
         "url_busqueda": "https://www.elcorteingles.es/buscar?q={producto}",
         "url_login": "https://www.elcorteingles.es/login",
+        "url_compra": "https://www.elcorteingles.es/checkout",
         "categoria": "General",
         "moneda": "EUR",
         "requiere_login": True
@@ -157,6 +167,7 @@ TIENDAS = [
         "url": "https://www.topps.com", 
         "url_busqueda": "https://www.topps.com/search?q={producto}",
         "url_login": "https://www.topps.com/login",
+        "url_compra": "https://www.topps.com/checkout",
         "categoria": "TCG",
         "moneda": "USD",
         "requiere_login": True
@@ -167,6 +178,7 @@ TIENDAS = [
         "url": "https://www.turolgames.com", 
         "url_busqueda": "https://www.turolgames.com/buscar?q={producto}",
         "url_login": "https://www.turolgames.com/login",
+        "url_compra": "https://www.turolgames.com/checkout",
         "categoria": "Videojuegos",
         "moneda": "EUR",
         "requiere_login": True
@@ -177,6 +189,7 @@ TIENDAS = [
         "url": "https://www.flashstore.com", 
         "url_busqueda": "https://www.flashstore.com/search?q={producto}",
         "url_login": "https://www.flashstore.com/login",
+        "url_compra": "https://www.flashstore.com/checkout",
         "categoria": "General",
         "moneda": "EUR",
         "requiere_login": True
@@ -187,6 +200,7 @@ TIENDAS = [
         "url": "https://www.pokemoncenter.com", 
         "url_busqueda": "https://www.pokemoncenter.com/search?q={producto}",
         "url_login": "https://www.pokemoncenter.com/login",
+        "url_compra": "https://www.pokemoncenter.com/checkout",
         "categoria": "TCG",
         "moneda": "USD",
         "requiere_login": True
@@ -197,6 +211,7 @@ TIENDAS = [
         "url": "https://www.cardmarket.com", 
         "url_busqueda": "https://www.cardmarket.com/es/Magic/Products/Singles?searchString={producto}",
         "url_login": "https://www.cardmarket.com/es/Login",
+        "url_compra": "https://www.cardmarket.com/es/Cart",
         "categoria": "TCG",
         "moneda": "EUR",
         "requiere_login": True
@@ -559,6 +574,7 @@ def buscar_en_tienda(tienda, producto):
         "url": url_busqueda,  # URL real de búsqueda
         "url_tienda": tienda["url"],
         "url_login": tienda["url_login"],
+        "url_compra": tienda["url_compra"],
         "moneda": tienda["moneda"],
         "requiere_login": tienda["requiere_login"],
         "sesion_activa": tiene_sesion,
@@ -692,6 +708,76 @@ def dashboard():
     if 'usuario' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html', tiendas=TIENDAS)
+
+# ============================================
+# API DE GESTIÓN DE URLs DE TIENDAS
+# ============================================
+@app.route('/api/tiendas/urls', methods=['GET'])
+def api_tiendas_urls():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    return jsonify(TIENDAS)
+
+@app.route('/api/tiendas/urls/actualizar', methods=['POST'])
+def api_tiendas_urls_actualizar():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    data = request.json
+    tienda_id = data.get('tienda_id')
+    url_tienda = data.get('url_tienda')
+    url_busqueda = data.get('url_busqueda')
+    url_login = data.get('url_login')
+    url_compra = data.get('url_compra')
+    
+    tienda = next((t for t in TIENDAS if t["id"] == tienda_id), None)
+    if not tienda:
+        return jsonify({"error": "Tienda no encontrada"}), 404
+    
+    if url_tienda:
+        tienda["url"] = url_tienda
+    if url_busqueda:
+        tienda["url_busqueda"] = url_busqueda
+    if url_login:
+        tienda["url_login"] = url_login
+    if url_compra:
+        tienda["url_compra"] = url_compra
+    
+    enviar_telegram(f"""
+🔗 <b>URLs actualizadas para {tienda['nombre']}</b>
+
+🏪 <b>Tienda:</b> {tienda['url']}
+🔍 <b>Búsqueda:</b> {tienda['url_busqueda']}
+🔑 <b>Login:</b> {tienda['url_login']}
+🛒 <b>Compra:</b> {tienda['url_compra']}
+""")
+    
+    return jsonify({"mensaje": f"URLs actualizadas para {tienda['nombre']}", "tienda": tienda})
+
+@app.route('/api/tiendas/urls/test', methods=['POST'])
+def api_tiendas_urls_test():
+    if 'usuario' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    data = request.json
+    tienda_id = data.get('tienda_id')
+    
+    tienda = next((t for t in TIENDAS if t["id"] == tienda_id), None)
+    if not tienda:
+        return jsonify({"error": "Tienda no encontrada"}), 404
+    
+    # Verificar URLs
+    urls_estado = {
+        "tienda": tienda["nombre"],
+        "url_tienda": tienda["url"],
+        "url_busqueda": tienda["url_busqueda"],
+        "url_login": tienda["url_login"],
+        "url_compra": tienda["url_compra"],
+        "estado": "ok"
+    }
+    
+    return jsonify(urls_estado)
 
 # ============================================
 # API DE BÚSQUEDA
