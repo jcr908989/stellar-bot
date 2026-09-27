@@ -484,6 +484,13 @@
             resize: vertical;
             min-height: 100px;
         }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
         .modal {
             display: none;
             position: fixed;
@@ -590,6 +597,51 @@
             background: rgba(244, 67, 54, 0.2);
             color: #f44336;
             border: 1px solid #f44336;
+        }
+        .tarjeta-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 150px;
+            position: relative;
+            overflow: hidden;
+        }
+        .tarjeta-preview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .tarjeta-preview .chip {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #ffd700, #ffec80);
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .tarjeta-preview .numero {
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+        }
+        .tarjeta-preview .info {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+        }
+        .tarjeta-preview .info strong {
+            display: block;
+            color: white;
+            font-size: 14px;
+            margin-top: 3px;
         }
         ::-webkit-scrollbar {
             width: 10px;
@@ -1563,7 +1615,7 @@
         }
 
         // ============================================
-        // FUNCIONES DE PAGOS
+        // FUNCIONES DE PAGOS - ACTUALIZADAS CON TARJETA COMPLETA
         // ============================================
         function crearPerfilPago() {
             const modal = document.getElementById('modal');
@@ -1582,185 +1634,95 @@
                 </div>
                 <div class="form-group">
                     <label>Método de Pago</label>
-                    <select id="pago-metodo">
+                    <select id="pago-metodo" onchange="cambiarMetodoPago()">
                         <option value="paypal">PayPal</option>
                         <option value="tarjeta">Tarjeta de Crédito</option>
                         <option value="transferencia">Transferencia Bancaria</option>
                         <option value="bitcoin">Bitcoin</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Datos del Método</label>
-                    <input type="text" id="pago-datos" placeholder="Email de PayPal / Número de tarjeta / IBAN / Wallet BTC">
-                </div>
+                
+                <!-- Contenedor para campos dinámicos según método -->
+                <div id="campos-metodo-pago"></div>
+                
                 <button class="btn btn-success" onclick="guardarPerfilPago()">💾 Guardar Perfil</button>
             `;
             
             modal.style.display = 'block';
+            cambiarMetodoPago(); // Inicializar con PayPal
         }
 
-        async function guardarPerfilPago() {
-            const nombre = document.getElementById('pago-nombre').value;
-            const email = document.getElementById('pago-email').value;
+        function cambiarMetodoPago() {
             const metodo = document.getElementById('pago-metodo').value;
-            const datos = document.getElementById('pago-datos').value;
-
-            if (!nombre || !email || !datos) {
-                mostrarNotificacion('Completa todos los campos', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/pagos/perfil', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        nombre: nombre,
-                        email: email,
-                        metodo: metodo,
-                        datos: { info: datos }
-                    })
-                });
-
-                const data = await response.json();
-                mostrarNotificacion('Perfil creado exitosamente', 'success');
-                cerrarModal();
-            } catch (error) {
-                mostrarNotificacion('Error al crear perfil', 'error');
-            }
-        }
-
-        async function verPerfilesPago() {
-            try {
-                const response = await fetch('/api/pagos/perfil');
-                const data = await response.json();
-                mostrarNotificacion('Perfiles de pago consultados', 'info');
-            } catch (error) {
-                mostrarNotificacion('Error al ver perfiles', 'error');
-            }
-        }
-
-        async function verTransacciones() {
-            try {
-                const response = await fetch('/api/pagos/transacciones');
-                const data = await response.json();
-                
-                const modal = document.getElementById('modal');
-                const contenido = document.getElementById('modal-contenido');
-                document.getElementById('modal-titulo').textContent = '📊 Transacciones';
-                
-                if (data.length === 0) {
-                    contenido.innerHTML = '<h3>No hay transacciones</h3>';
-                } else {
-                    let html = '<h3>Transacciones:</h3>';
-                    data.forEach(t => {
-                        html += `
-                            <div class="result-item">
-                                <div>
-                                    <div class="store">${t.tienda}</div>
-                                    <div>${t.producto}</div>
-                                    <small>${t.fecha}</small>
-                                </div>
-                                <div>
-                                    <span class="price">${t.total}€</span>
-                                    <br>
-                                    <small>${t.estado}</small>
-                                </div>
+            const contenedor = document.getElementById('campos-metodo-pago');
+            
+            if (metodo === 'paypal') {
+                contenedor.innerHTML = `
+                    <div class="form-group">
+                        <label>Email de PayPal</label>
+                        <input type="email" id="pago-paypal-email" placeholder="tuemail@paypal.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña de PayPal</label>
+                        <input type="password" id="pago-paypal-password" placeholder="••••••••">
+                    </div>
+                `;
+            } else if (metodo === 'tarjeta') {
+                contenedor.innerHTML = `
+                    <div class="tarjeta-preview" id="tarjeta-preview">
+                        <div class="chip">💳</div>
+                        <div class="numero" id="preview-numero">•••• •••• •••• ••••</div>
+                        <div class="info">
+                            <div>
+                                <strong id="preview-titular">NOMBRE APELLIDO</strong>
                             </div>
-                        `;
-                    });
-                    contenido.innerHTML = html;
-                }
-                
-                modal.style.display = 'block';
-            } catch (error) {
-                mostrarNotificacion('Error al ver transacciones', 'error');
-            }
-        }
-
-        async function comprarProducto(producto, tienda, precio) {
-            const modal = document.getElementById('modal');
-            const contenido = document.getElementById('modal-contenido');
-            document.getElementById('modal-titulo').textContent = '💳 Comprar Producto';
-            
-            contenido.innerHTML = `
-                <h3>Comprar: ${producto}</h3>
-                <p><strong>Tienda:</strong> ${tienda}</p>
-                <p><strong>Precio:</strong> ${precio}€</p>
-                <div class="form-group">
-                    <label>Selecciona Perfil de Pago</label>
-                    <select id="compra-perfil">
-                        <option value="">Selecciona un perfil...</option>
-                        <option value="1">Perfil 1 - PayPal</option>
-                        <option value="2">Perfil 2 - Tarjeta</option>
-                    </select>
-                </div>
-                <button class="btn btn-success" onclick="procesarCompra('${producto}', '${tienda}', ${precio})">💳 Procesar Pago</button>
-            `;
-            
-            modal.style.display = 'block';
-        }
-
-        async function procesarCompra(producto, tienda, precio) {
-            const perfilId = document.getElementById('compra-perfil').value;
-            
-            if (!perfilId) {
-                mostrarNotificacion('Selecciona un perfil de pago', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/pagos/procesar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        perfil_id: parseInt(perfilId),
-                        monto: precio,
-                        producto: producto,
-                        tienda: tienda
-                    })
-                });
-
-                const data = await response.json();
-                if (data.error) {
-                    mostrarNotificacion(data.error, 'error');
-                } else {
-                    mostrarNotificacion(`Pago procesado: ${data.total}€`, 'success');
-                    cerrarModal();
-                    actualizarTransacciones();
-                }
-            } catch (error) {
-                mostrarNotificacion('Error al procesar pago', 'error');
-            }
-        }
-
-        async function actualizarTransacciones() {
-            try {
-                const response = await fetch('/api/pagos/transacciones');
-                const data = await response.json();
-                document.getElementById('transacciones-count').textContent = data.length;
-            } catch (error) {
-                console.error('Error al actualizar transacciones');
-            }
-        }
-
-        function cerrarModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        // Cargar datos al inicio
-        actualizarListaMonitoreo();
-        actualizarTransacciones();
-        actualizarProxiesCount();
-
-        // Actualizar cada 30 segundos
-        setInterval(actualizarListaMonitoreo, 30000);
-        setInterval(actualizarTransacciones, 60000);
-        setInterval(actualizarProxiesCount, 30000);
-    </script>
-</body>
-</html>
+                            <div>
+                                <strong id="preview-fecha">MM/AA</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Número de Tarjeta</label>
+                        <input type="text" id="pago-tarjeta-numero" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatearNumeroTarjeta()">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mes de Caducidad</label>
+                            <select id="pago-tarjeta-mes">
+                                <option value="">Mes</option>
+                                <option value="01">01 - Enero</option>
+                                <option value="02">02 - Febrero</option>
+                                <option value="03">03 - Marzo</option>
+                                <option value="04">04 - Abril</option>
+                                <option value="05">05 - Mayo</option>
+                                <option value="06">06 - Junio</option>
+                                <option value="07">07 - Julio</option>
+                                <option value="08">08 - Agosto</option>
+                                <option value="09">09 - Septiembre</option>
+                                <option value="10">10 - Octubre</option>
+                                <option value="11">11 - Noviembre</option>
+                                <option value="12">12 - Diciembre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Año de Caducidad</label>
+                            <select id="pago-tarjeta-anio">
+                                <option value="">Año</option>
+                                <option value="24">2024</option>
+                                <option value="25">2025</option>
+                                <option value="26">2026</option>
+                                <option value="27">2027</option>
+                                <option value="28">2028</option>
+                                <option value="29">2029</option>
+                                <option value="30">2030</option>
+                                <option value="31">2031</option>
+                                <option value="32">2032</option>
+                                <option value="33">2033</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="password
